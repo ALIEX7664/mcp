@@ -29,6 +29,15 @@
     "name": "aliex7664",
     "url": "https://github.com/ALIEX7664/mcp/tree/main/debugger-mcp"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALIEX7664/mcp.git",
+    "directory": "debugger-mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/ALIEX7664/mcp/issues"
+  },
+  "homepage": "https://github.com/ALIEX7664/mcp/tree/main/debugger-mcp#readme",
   "publishConfig": {
     "access": "public"
   },
@@ -39,7 +48,10 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/node": "^20.0.0",
+    "semantic-release": "^25.0.2",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

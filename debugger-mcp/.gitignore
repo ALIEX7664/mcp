@@ -29,6 +29,7 @@ Thumbs.db
 # docs
 *.md
 !README.md
+!CHANGELOG.md
 
 # scripts
 scripts/
