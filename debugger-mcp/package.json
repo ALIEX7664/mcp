@@ -1,0 +1,38 @@
+{
+  "name": "puppeteer-debugger-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for browser debugging via CDP",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "puppeteer-debugger-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "dev": "tsup --watch"
+  },
+  "keywords": [
+    "mcp",
+    "browser",
+    "debugging",
+    "cdp",
+    "puppeteer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.3",
+    "puppeteer": "^21.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0"
+  }
+}
