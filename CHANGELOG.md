@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/ALIEX7664/puppeteer-debugger-mcp-server/compare/v1.0.3...v1.0.4) (2025-12-16)
+
+
+### Bug Fixes
+
+* **server:** 修复内存占用过高问题 ([0f6c53c](https://github.com/ALIEX7664/puppeteer-debugger-mcp-server/commit/0f6c53c41f3d16f185539b6aadcc5f1d232c83f7))
+
 ## [1.0.3](https://github.com/ALIEX7664/mcp/compare/v1.0.2...v1.0.3) (2025-12-15)
 
 
