@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/ALIEX7664/mcp/compare/v1.0.2...v1.0.3) (2025-12-15)
+
+
+### Bug Fixes
+
+* 调整项目测试 ([84a8bca](https://github.com/ALIEX7664/mcp/commit/84a8bcaf3280b0b47d3847a1843507b456bff46c))
+
 # 1.0.0 (2025-12-15)
 
 
