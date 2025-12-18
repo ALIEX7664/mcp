@@ -209,6 +209,14 @@
 
 - `url` (string, 可选): 页面 URL
 - `duration` (number, 可选): 跟踪时长（毫秒），默认 5000
+- `topN` (number, 可选): Top N（调用栈）数量，默认 20
+- `collectGarbage` (boolean, 可选): 采集前是否触发 GC，默认 false
+- `maxSnapshotBytes` (number, 可选): raw profile（带 trace 的 heap snapshot）采集最大字节数，默认 200MB
+- `maxParseBytes` (number, 可选): JSON.parse 解析最大字节数，默认 50MB
+- `export` (object, 可选): raw profile 导出选项（推荐 `file`，避免响应过大）
+  - `mode` (string, 可选): `none` | `file` | `inline` | `both`
+  - `filePath` (string, 可选): `file/both` 模式输出路径（推荐相对路径，如 `./.heapsnapshot/alloc.heapsnapshot`）
+  - `maxInlineBytes` (number, 可选): `inline/both` 模式 inline 最大字节数（超出截断）
 
 **示例：**
 
@@ -217,7 +225,12 @@
   "name": "track_allocations",
   "arguments": {
     "url": "https://example.com",
-    "duration": 10000
+    "duration": 10000,
+    "topN": 20,
+    "export": {
+      "mode": "file",
+      "filePath": "./.heapsnapshot/alloc-example.heapsnapshot"
+    }
   }
 }
 ```
