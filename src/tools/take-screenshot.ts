@@ -1,16 +1,16 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 import {
   saveScreenshotToFile,
   ensurePageFullyLoaded,
   PNG_BASE64_DATA_URI_PREFIX,
   calculateBase64Size,
-} from '../utils/screenshot-utils.js';
+} from '../utils/screenshot-utils';
 
 /**
  * 截图工具定义
  */
-export const takeScreenshotTool: ToolDefinition = {
+export const takeScreenshotTool: Tools.Definition = {
   name: 'take_screenshot',
   description:
     '截图工具（辅助调试）。支持视口截图和全页截图。建议在使用前询问用户希望的输出方式：如果用户需要直接查看图片，使用 inline 模式返回 base64；如果用户需要保存图片文件，使用 file 或 auto 模式保存为文件。对于全页截图或大图片，强烈建议使用 file/auto 模式避免响应过大。',
@@ -78,7 +78,7 @@ export const takeScreenshotTool: ToolDefinition = {
       scrollDelay?: number;
       waitForSelector?: string;
     },
-    context: ToolContext
+    context: Tools.Context
   ) => {
     const page = await context.browserManager.getPage(args.url);
 

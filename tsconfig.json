@@ -15,6 +15,6 @@
     "sourceMap": true,
     "types": ["node"]
   },
-  "include": ["src/**/*", "tsup.config.ts"],
+  "include": ["src/**/*", "types/**/*", "tsup.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

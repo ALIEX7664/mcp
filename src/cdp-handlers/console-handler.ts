@@ -1,13 +1,13 @@
 import { Page } from 'puppeteer';
-import { ConsoleLogEntry, GetConsoleErrorsParams } from '../types.js';
-import { BrowserManager } from '../browser-manager.js';
+import { Console } from '../../types';
+import { BrowserManager } from '../browser-manager';
 
 /**
  * Console 异常处理器
  */
 export class ConsoleHandler {
   private browserManager: BrowserManager;
-  private consoleLogs: Map<string, ConsoleLogEntry[]> = new Map();
+  private consoleLogs: Map<string, Console.LogEntry[]> = new Map();
 
   constructor(browserManager: BrowserManager) {
     this.browserManager = browserManager;
@@ -17,8 +17,8 @@ export class ConsoleHandler {
    * 获取 Console 错误和日志
    */
   public async getConsoleErrors(
-    params: GetConsoleErrorsParams
-  ): Promise<ConsoleLogEntry[]> {
+    params: Console.GetErrorsParams
+  ): Promise<Console.LogEntry[]> {
     const page = await this.browserManager.getPage(params.url);
     const pageUrl = page.url();
 
@@ -29,7 +29,7 @@ export class ConsoleHandler {
     }
 
     const logs = this.consoleLogs.get(pageUrl) || [];
-    
+
     // 根据级别过滤
     if (params.level === 'error') {
       return logs.filter((log) => log.type === 'error');
@@ -57,7 +57,7 @@ export class ConsoleHandler {
       const text = msg.text();
       const location = msg.location();
 
-      const entry: ConsoleLogEntry = {
+      const entry: Console.LogEntry = {
         type,
         text,
         timestamp: Date.now(),
@@ -87,7 +87,7 @@ export class ConsoleHandler {
 
     // 监听页面错误
     const pageErrorHandler = (error: Error) => {
-      const entry: ConsoleLogEntry = {
+      const entry: Console.LogEntry = {
         type: 'error',
         text: error.message,
         timestamp: Date.now(),
@@ -103,7 +103,7 @@ export class ConsoleHandler {
 
     // 监听请求失败
     const requestFailedHandler = (request: any) => {
-      const entry: ConsoleLogEntry = {
+      const entry: Console.LogEntry = {
         type: 'error',
         text: `Request failed: ${request.url()}`,
         timestamp: Date.now(),
@@ -128,7 +128,7 @@ export class ConsoleHandler {
   /**
    * 映射 Console 类型
    */
-  private mapConsoleType(type: string): ConsoleLogEntry['type'] {
+  private mapConsoleType(type: string): Console.LogEntry['type'] {
     switch (type) {
       case 'error':
         return 'error';

@@ -1,16 +1,16 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 
 /**
  * 分析内存工具定义
  */
-export const analyzeMemoryTool: ToolDefinition = {
+export const analyzeMemoryTool: Tools.Definition = {
     name: 'analyze_memory',
     description: '分析内存使用情况',
     inputSchema: z.object({
         url: z.string().optional().describe('页面 URL（可选）'),
     }),
-    handler: async (args: { url?: string }, context: ToolContext) => {
+    handler: async (args: { url?: string }, context: Tools.Context) => {
         const analysis = await context.heapHandler.analyzeMemory({
             url: args.url,
         });

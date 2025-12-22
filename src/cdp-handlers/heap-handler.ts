@@ -1,15 +1,6 @@
 import { Page } from 'puppeteer';
-import {
-  HeapSnapshot,
-  MemoryAnalysis,
-  AllocationTracking,
-  AllocationTrackingSummary,
-  AllocationTrackingTopStack,
-  GetHeapSnapshotParams,
-  AnalyzeMemoryParams,
-  TrackAllocationsParams,
-} from '../types.js';
-import { BrowserManager } from '../browser-manager.js';
+import { Heap } from '../../types';
+import { BrowserManager } from '../browser-manager';
 import { createWriteStream } from 'node:fs';
 import { mkdir, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -21,8 +12,8 @@ import { randomUUID } from 'node:crypto';
  */
 export class HeapHandler {
   private browserManager: BrowserManager;
-  private snapshots: Map<string, HeapSnapshot[]> = new Map();
-  private allocationTracking: Map<string, AllocationTracking> = new Map();
+  private snapshots: Map<string, Heap.Snapshot[]> = new Map();
+  private allocationTracking: Map<string, Heap.AllocationTracking> = new Map();
 
   constructor(browserManager: BrowserManager) {
     this.browserManager = browserManager;
@@ -32,8 +23,8 @@ export class HeapHandler {
    * 获取堆快照
    */
   public async getHeapSnapshot(
-    params: GetHeapSnapshotParams
-  ): Promise<HeapSnapshot> {
+    params: Heap.GetSnapshotParams
+  ): Promise<Heap.Snapshot> {
     const page = await this.browserManager.getPage(params.url);
     const client = await page.target().createCDPSession();
 
@@ -156,7 +147,7 @@ export class HeapHandler {
 
       const legacyTotalNodes = totalNodes ?? 0;
 
-      const legacyNodes: NonNullable<HeapSnapshot['nodes']> = (topNodes ?? []).map(
+      const legacyNodes: NonNullable<Heap.Snapshot['nodes']> = (topNodes ?? []).map(
         (n, i) => ({
           id: typeof n.id === 'number' ? n.id : i,
           name: n.name,
@@ -208,8 +199,8 @@ export class HeapHandler {
    * 分析内存使用情况
    */
   public async analyzeMemory(
-    params: AnalyzeMemoryParams
-  ): Promise<MemoryAnalysis> {
+    params: Heap.AnalyzeMemoryParams
+  ): Promise<Heap.MemoryAnalysis> {
     const page = await this.browserManager.getPage(params.url);
     const client = await page.target().createCDPSession();
 
@@ -259,8 +250,8 @@ export class HeapHandler {
    * 跟踪对象分配
    */
   public async trackAllocations(
-    params: TrackAllocationsParams
-  ): Promise<AllocationTracking> {
+    params: Heap.TrackAllocationsParams
+  ): Promise<Heap.AllocationTracking> {
     const page = await this.browserManager.getPage(params.url);
     const client = await page.target().createCDPSession();
     const pageUrl = page.url();
@@ -321,7 +312,7 @@ export class HeapHandler {
           ? Math.max(0, afterUsedBytes - beforeUsedBytes)
           : 0;
 
-      let summary: AllocationTrackingSummary | undefined;
+      let summary: Heap.AllocationTrackingSummary | undefined;
 
       try {
         if (streamError) {
@@ -356,7 +347,7 @@ export class HeapHandler {
 
       const topStacks = summary?.topStacks ?? [];
       const legacyTimestamp = now;
-      const allocations: AllocationTracking['allocations'] = topStacks.map((s) => ({
+      const allocations: Heap.AllocationTracking['allocations'] = topStacks.map((s) => ({
         size: s.sizeBytes,
         timestamp: legacyTimestamp,
         stackTrace: s.stackTrace,
@@ -366,7 +357,7 @@ export class HeapHandler {
         summary?.totalAllocatedBytes ?? (approxAllocatedBytes > 0 ? approxAllocatedBytes : 0);
       const count = summary?.totalCount ?? (allocations.length > 0 ? allocations.length : 0);
 
-      const tracking: AllocationTracking = {
+      const tracking: Heap.AllocationTracking = {
         timestamp: now,
         durationMs,
         summary,
@@ -401,9 +392,9 @@ export class HeapHandler {
   ): Promise<{
     leakDetected: boolean;
     growthRate: number;
-    snapshots: HeapSnapshot[];
+    snapshots: Heap.Snapshot[];
   }> {
-    const snapshots: HeapSnapshot[] = [];
+    const snapshots: Heap.Snapshot[] = [];
 
     for (let i = 0; i < snapshotCount; i++) {
       const snapshot = await this.getHeapSnapshot({ url });
@@ -563,7 +554,7 @@ export class HeapHandler {
   private parseV8HeapSnapshotAllocationTrace(
     rawJson: string,
     topN: number
-  ): AllocationTrackingSummary {
+  ): Heap.AllocationTrackingSummary {
     const data = JSON.parse(rawJson) as unknown;
     if (!data || typeof data !== 'object') {
       throw new Error('invalid heap snapshot structure');
@@ -655,8 +646,8 @@ export class HeapHandler {
       return name;
     };
 
-    const top: AllocationTrackingTopStack[] = [];
-    const pushTop = (item: AllocationTrackingTopStack) => {
+    const top: Heap.AllocationTrackingTopStack[] = [];
+    const pushTop = (item: Heap.AllocationTrackingTopStack) => {
       if (topN <= 0) return;
       if (top.length < topN) {
         top.push(item);
@@ -764,7 +755,7 @@ export class HeapHandler {
     fileBytesWritten: number;
     snapshotTruncated: boolean;
     streamError: Error | null;
-    exportInfo: HeapSnapshot['export'];
+    exportInfo: Heap.Snapshot['export'];
   }> {
     const shouldReturnFile = params.exportMode === 'file' || params.exportMode === 'both';
     const shouldReturnInline = params.exportMode === 'inline' || params.exportMode === 'both';
@@ -865,7 +856,7 @@ export class HeapHandler {
       stream.once('error', reject);
     });
 
-    const exportInfo: HeapSnapshot['export'] = {
+    const exportInfo: Heap.Snapshot['export'] = {
       mode: params.exportMode,
       filePath: shouldReturnFile ? snapshotFilePath : undefined,
       fileBytes: shouldReturnFile ? fileBytesWritten : undefined,

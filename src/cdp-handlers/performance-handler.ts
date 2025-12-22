@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
-import { PerformanceMetrics, GetPerformanceParams } from '../types.js';
-import { BrowserManager } from '../browser-manager.js';
+import { Performance } from '../../types';
+import { BrowserManager } from '../browser-manager';
 
 /**
  * 性能数据收集器
@@ -16,8 +16,8 @@ export class PerformanceHandler {
    * 获取性能数据
    */
   public async getPerformance(
-    params: GetPerformanceParams
-  ): Promise<PerformanceMetrics> {
+    params: Performance.GetParams
+  ): Promise<Performance.Metrics> {
     const page = await this.browserManager.getPage(params.url);
 
     // 启用 Performance 域
@@ -27,78 +27,78 @@ export class PerformanceHandler {
 
       // 获取性能指标
       const performanceData = await page.evaluate(() => {
-      const navigation = performance.getEntriesByType(
-        'navigation'
-      )[0] as PerformanceNavigationTiming;
-      const paint = performance.getEntriesByType('paint');
-      const resources = performance.getEntriesByType(
-        'resource'
-      ) as PerformanceResourceTiming[];
-      const marks = performance.getEntriesByType('mark');
-      const measures = performance.getEntriesByType('measure');
+        const navigation = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
+        const paint = performance.getEntriesByType('paint');
+        const resources = performance.getEntriesByType(
+          'resource'
+        ) as PerformanceResourceTiming[];
+        const marks = performance.getEntriesByType('mark');
+        const measures = performance.getEntriesByType('measure');
 
-      return {
-        navigation: {
-          type: navigation.type.toString(),
-          redirectCount: navigation.redirectCount,
-          timing: {
-            navigationStart: navigation.startTime, // navigationStart does not exist, use startTime
-            unloadEventStart: navigation.unloadEventStart,
-            unloadEventEnd: navigation.unloadEventEnd,
-            redirectStart: navigation.redirectStart,
-            redirectEnd: navigation.redirectEnd,
-            fetchStart: navigation.fetchStart,
-            domainLookupStart: navigation.domainLookupStart,
-            domainLookupEnd: navigation.domainLookupEnd,
-            connectStart: navigation.connectStart,
-            connectEnd: navigation.connectEnd,
-            secureConnectionStart: navigation.secureConnectionStart,
-            requestStart: navigation.requestStart,
-            responseStart: navigation.responseStart,
-            responseEnd: navigation.responseEnd,
-            // domLoading is not available on PerformanceNavigationTiming, so we omit it
-            domInteractive: navigation.domInteractive,
-            domContentLoadedEventStart: navigation.domContentLoadedEventStart,
-            domContentLoadedEventEnd: navigation.domContentLoadedEventEnd,
-            domComplete: navigation.domComplete,
-            loadEventStart: navigation.loadEventStart,
-            loadEventEnd: navigation.loadEventEnd,
+        return {
+          navigation: {
+            type: navigation.type.toString(),
+            redirectCount: navigation.redirectCount,
+            timing: {
+              navigationStart: navigation.startTime, // navigationStart does not exist, use startTime
+              unloadEventStart: navigation.unloadEventStart,
+              unloadEventEnd: navigation.unloadEventEnd,
+              redirectStart: navigation.redirectStart,
+              redirectEnd: navigation.redirectEnd,
+              fetchStart: navigation.fetchStart,
+              domainLookupStart: navigation.domainLookupStart,
+              domainLookupEnd: navigation.domainLookupEnd,
+              connectStart: navigation.connectStart,
+              connectEnd: navigation.connectEnd,
+              secureConnectionStart: navigation.secureConnectionStart,
+              requestStart: navigation.requestStart,
+              responseStart: navigation.responseStart,
+              responseEnd: navigation.responseEnd,
+              // domLoading is not available on PerformanceNavigationTiming, so we omit it
+              domInteractive: navigation.domInteractive,
+              domContentLoadedEventStart: navigation.domContentLoadedEventStart,
+              domContentLoadedEventEnd: navigation.domContentLoadedEventEnd,
+              domComplete: navigation.domComplete,
+              loadEventStart: navigation.loadEventStart,
+              loadEventEnd: navigation.loadEventEnd,
+            },
           },
-        },
-        paint: paint.map((entry) => ({
-          name: entry.name,
-          entryType: entry.entryType,
-          startTime: entry.startTime,
-          duration: entry.duration,
-        })),
-        resources: resources.map((entry) => ({
-          name: entry.name,
-          entryType: entry.entryType,
-          startTime: entry.startTime,
-          duration: entry.duration,
-          initiatorType: entry.initiatorType,
-          transferSize: entry.transferSize,
-          encodedBodySize: entry.encodedBodySize,
-          decodedBodySize: entry.decodedBodySize,
-        })),
-        marks: marks.map((entry) => ({
-          name: entry.name,
-          entryType: entry.entryType,
-          startTime: entry.startTime,
-        })),
-        measures: measures.map((entry) => ({
-          name: entry.name,
-          entryType: entry.entryType,
-          startTime: entry.startTime,
-          duration: entry.duration,
-        })),
-      };
-    });
+          paint: paint.map((entry) => ({
+            name: entry.name,
+            entryType: entry.entryType,
+            startTime: entry.startTime,
+            duration: entry.duration,
+          })),
+          resources: resources.map((entry) => ({
+            name: entry.name,
+            entryType: entry.entryType,
+            startTime: entry.startTime,
+            duration: entry.duration,
+            initiatorType: entry.initiatorType,
+            transferSize: entry.transferSize,
+            encodedBodySize: entry.encodedBodySize,
+            decodedBodySize: entry.decodedBodySize,
+          })),
+          marks: marks.map((entry) => ({
+            name: entry.name,
+            entryType: entry.entryType,
+            startTime: entry.startTime,
+          })),
+          measures: measures.map((entry) => ({
+            name: entry.name,
+            entryType: entry.entryType,
+            startTime: entry.startTime,
+            duration: entry.duration,
+          })),
+        };
+      });
 
       // 获取 Performance Timeline 数据
       const timeline = await client.send('Performance.getMetrics');
 
-      return performanceData as PerformanceMetrics;
+      return performanceData as Performance.Metrics;
     } finally {
       // 确保 CDP 连接被正确关闭
       try {

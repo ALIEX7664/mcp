@@ -1,5 +1,5 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
-import { BrowserConfig, PageInfo } from './types.js';
+import { Browser as BrowserTypes } from '../types';
 import { existsSync } from 'fs';
 import { access } from 'fs/promises';
 
@@ -9,8 +9,8 @@ import { access } from 'fs/promises';
 export class BrowserManager {
   private static instance: BrowserManager;
   private browser: Browser | null = null;
-  private pages: Map<string, PageInfo> = new Map();
-  private config: BrowserConfig;
+  private pages: Map<string, BrowserTypes.PageInfo> = new Map();
+  private config: BrowserTypes.Config;
   // 添加初始化锁，防止并发初始化导致多个浏览器进程
   private initializing: Promise<void> | null = null;
   // 最大页面数量限制，防止内存泄漏
@@ -19,7 +19,7 @@ export class BrowserManager {
   private readonly pageCleanupInterval = 5 * 60 * 1000; // 5 分钟
   private cleanupTimer: NodeJS.Timeout | null = null;
 
-  private constructor(config: BrowserConfig = {}) {
+  private constructor(config: BrowserTypes.Config = {}) {
     // 优化浏览器启动参数，减少内存占用
     const defaultArgs = [
       '--no-sandbox',
@@ -61,7 +61,7 @@ export class BrowserManager {
   /**
    * 获取单例实例
    */
-  public static getInstance(config?: BrowserConfig): BrowserManager {
+  public static getInstance(config?: BrowserTypes.Config): BrowserManager {
     if (!BrowserManager.instance) {
       BrowserManager.instance = new BrowserManager(config);
     }
@@ -307,7 +307,7 @@ export class BrowserManager {
   /**
    * 获取所有页面
    */
-  public getPages(): PageInfo[] {
+  public getPages(): BrowserTypes.PageInfo[] {
     return Array.from(this.pages.values()).filter(
       (info) => !info.page.isClosed()
     );

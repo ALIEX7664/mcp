@@ -1,20 +1,20 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolDefinition, ToolContext } from './types.js';
-import { navigateTool } from './navigate.js';
-import { getConsoleErrorsTool } from './get-console-errors.js';
-import { checkElementTool } from './check-element.js';
-import { getCacheStatusTool } from './get-cache-status.js';
-import { getPerformanceTool } from './get-performance.js';
-import { getHeapSnapshotTool } from './get-heap-snapshot.js';
-import { analyzeMemoryTool } from './analyze-memory.js';
-import { trackAllocationsTool } from './track-allocations.js';
-import { takeScreenshotTool } from './take-screenshot.js';
-import { getLighthouseTool } from './get-lighthouse.js';
+import { Tools } from '../../types';
+import { navigateTool } from './navigate';
+import { getConsoleErrorsTool } from './get-console-errors';
+import { checkElementTool } from './check-element';
+import { getCacheStatusTool } from './get-cache-status';
+import { getPerformanceTool } from './get-performance';
+import { getHeapSnapshotTool } from './get-heap-snapshot';
+import { analyzeMemoryTool } from './analyze-memory';
+import { trackAllocationsTool } from './track-allocations';
+import { takeScreenshotTool } from './take-screenshot';
+import { getLighthouseTool } from './get-lighthouse';
 
 /**
  * 所有工具定义列表
  */
-export const allTools: ToolDefinition[] = [
+export const allTools: Tools.Definition[] = [
   navigateTool,
   getConsoleErrorsTool,
   checkElementTool,
@@ -30,7 +30,7 @@ export const allTools: ToolDefinition[] = [
 /**
  * 注册所有工具到 MCP Server
  */
-export function registerAllTools(server: McpServer, context: ToolContext): void {
+export function registerAllTools(server: McpServer, context: Tools.Context): void {
   for (const tool of allTools) {
     const handler = async (args: any) => {
       return tool.handler(args, context);

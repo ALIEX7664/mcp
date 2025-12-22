@@ -1,5 +1,5 @@
-import { WebVitalsMetrics, WebVitalsRatings } from './lighthouse-types.js';
-import { WebVitalsRating, WEB_VITALS_THRESHOLDS } from './lighthouse-constants.js';
+import { Lighthouse } from '../../types';
+import { WebVitalsRating, WEB_VITALS_THRESHOLDS } from './lighthouse-constants';
 
 export function getWebVitalsRating(
   metric: keyof typeof WEB_VITALS_THRESHOLDS,
@@ -17,9 +17,9 @@ export function getWebVitalsRating(
 }
 
 export function calculateWebVitalsRatings(
-  metrics: WebVitalsMetrics
-): Partial<Record<keyof WebVitalsMetrics, WebVitalsRating>> {
-  const ratings: Partial<Record<keyof WebVitalsMetrics, WebVitalsRating>> = {};
+  metrics: Lighthouse.WebVitalsMetrics
+): Partial<Record<keyof Lighthouse.WebVitalsMetrics, Lighthouse.WebVitalsRating>> {
+  const ratings: Partial<Record<keyof Lighthouse.WebVitalsMetrics, Lighthouse.WebVitalsRating>> = {};
 
   if (metrics.fcp !== null) {
     ratings.fcp = getWebVitalsRating('FCP', metrics.fcp);

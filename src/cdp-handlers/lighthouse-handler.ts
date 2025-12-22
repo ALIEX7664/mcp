@@ -1,15 +1,6 @@
 import { Page, CDPSession } from 'puppeteer';
-import { BrowserManager } from '../browser-manager.js';
-import {
-  GetLighthouseParams,
-  LighthouseCategory,
-  LighthouseMetrics,
-  LighthouseAudit,
-  LighthouseReport,
-  WebVitalsMetrics,
-  WebVitalsRatings,
-  PerformanceMetrics,
-} from './lighthouse-types.js';
+import { BrowserManager } from '../browser-manager';
+import { Lighthouse } from '../../types';
 import {
   WebVitalsRating,
   WEB_VITALS_THRESHOLDS,
@@ -17,11 +8,11 @@ import {
   SCORING_THRESHOLDS,
   WAIT_TIMES,
   LIMITATIONS,
-} from './lighthouse-constants.js';
+} from './lighthouse-constants';
 import {
   calculateWebVitalsRatings,
   createPerformanceObserver,
-} from './lighthouse-utils.js';
+} from './lighthouse-utils';
 
 /**
  * Lighthouse 性能分析处理器（基于 Web Vitals 和 CDP）
@@ -37,8 +28,8 @@ export class LighthouseHandler {
    * 获取 Lighthouse 性能报告
    */
   public async getLighthouseReport(
-    params: GetLighthouseParams
-  ): Promise<LighthouseReport> {
+    params: Lighthouse.GetParams
+  ): Promise<Lighthouse.Report> {
     const page = await this.browserManager.getPage(params.url);
     const client = await page.target().createCDPSession();
 
@@ -163,7 +154,7 @@ export class LighthouseHandler {
   /**
    * 收集 Web Vitals 指标
    */
-  private async collectWebVitals(page: Page): Promise<WebVitalsMetrics & { ratings?: WebVitalsRatings }> {
+  private async collectWebVitals(page: Page): Promise<Lighthouse.WebVitalsMetrics & { ratings?: Lighthouse.WebVitalsRatings }> {
     const thresholds = {
       FCP: { GOOD: WEB_VITALS_THRESHOLDS.FCP.GOOD, NEEDS_IMPROVEMENT: WEB_VITALS_THRESHOLDS.FCP.NEEDS_IMPROVEMENT },
       LCP: { GOOD: WEB_VITALS_THRESHOLDS.LCP.GOOD, NEEDS_IMPROVEMENT: WEB_VITALS_THRESHOLDS.LCP.NEEDS_IMPROVEMENT },
@@ -183,8 +174,8 @@ export class LighthouseHandler {
 
     return await page.evaluate(
       (thresholds: any, waitTimes: any, ratingValues: any) => {
-        return new Promise<WebVitalsMetrics & { ratings?: WebVitalsRatings }>((resolve) => {
-          const metrics: WebVitalsMetrics = {
+        return new Promise<Lighthouse.WebVitalsMetrics & { ratings?: Lighthouse.WebVitalsRatings }>((resolve) => {
+          const metrics: Lighthouse.WebVitalsMetrics = {
             fcp: null,
             lcp: null,
             fid: null,
@@ -325,7 +316,7 @@ export class LighthouseHandler {
   /**
    * 收集性能指标
    */
-  private async collectPerformanceMetrics(page: Page, client: CDPSession): Promise<PerformanceMetrics> {
+  private async collectPerformanceMetrics(page: Page, client: CDPSession): Promise<Lighthouse.PerformanceMetrics> {
     const longTaskDuration = PERFORMANCE_THRESHOLDS.LONG_TASK_DURATION;
     const waitTimes = {
       SHORT: WAIT_TIMES.METRICS_COLLECTION_SHORT,
@@ -424,8 +415,8 @@ export class LighthouseHandler {
    * 计算评分
    */
   private calculateScores(
-    webVitals: WebVitalsMetrics,
-    performance: PerformanceMetrics
+    webVitals: Lighthouse.WebVitalsMetrics,
+    performance: Lighthouse.PerformanceMetrics
   ): {
     performance: number;
     accessibility: number;
@@ -489,7 +480,7 @@ export class LighthouseHandler {
     accessibility: number;
     bestPractices: number;
     seo: number;
-  }): Record<string, LighthouseCategory> {
+  }): Record<string, Lighthouse.Category> {
     return {
       performance: { score: scores.performance, title: 'Performance' },
       accessibility: { score: scores.accessibility, title: 'Accessibility' },
@@ -502,15 +493,15 @@ export class LighthouseHandler {
    * 过滤类别
    */
   private filterCategories(
-    allCategories: Record<string, LighthouseCategory>,
+    allCategories: Record<string, Lighthouse.Category>,
     onlyCategories?: string[]
-  ): LighthouseReport['categories'] {
+  ): Lighthouse.Report['categories'] {
     if (!onlyCategories || onlyCategories.length === 0) {
-      return allCategories as LighthouseReport['categories'];
+      return allCategories as Lighthouse.Report['categories'];
     }
 
-    const filtered: LighthouseReport['categories'] = {};
-    const validCategories: Array<keyof LighthouseReport['categories']> = [
+    const filtered: Lighthouse.Report['categories'] = {};
+    const validCategories: Array<keyof Lighthouse.Report['categories']> = [
       'performance',
       'accessibility',
       'best-practices',
@@ -518,10 +509,10 @@ export class LighthouseHandler {
     ];
 
     for (const category of onlyCategories) {
-      if (validCategories.includes(category as keyof LighthouseReport['categories'])) {
-        const key = category as keyof LighthouseReport['categories'];
+      if (validCategories.includes(category as keyof Lighthouse.Report['categories'])) {
+        const key = category as keyof Lighthouse.Report['categories'];
         if (category in allCategories) {
-          filtered[key] = allCategories[category] as LighthouseCategory;
+          filtered[key] = allCategories[category] as Lighthouse.Category;
         }
       }
     }
@@ -534,10 +525,10 @@ export class LighthouseHandler {
   private async getOpportunities(
     page: Page,
     client: CDPSession,
-    webVitals: WebVitalsMetrics,
-    performance: PerformanceMetrics,
+    webVitals: Lighthouse.WebVitalsMetrics,
+    performance: Lighthouse.PerformanceMetrics,
     skipAudits?: string[]
-  ): Promise<LighthouseAudit[]> {
+  ): Promise<Lighthouse.Audit[]> {
     const opportunities = [];
 
     // 检查图片优化
@@ -610,10 +601,10 @@ export class LighthouseHandler {
   private async getDiagnostics(
     page: Page,
     client: CDPSession,
-    webVitals: WebVitalsMetrics,
-    performance: PerformanceMetrics,
+    webVitals: Lighthouse.WebVitalsMetrics,
+    performance: Lighthouse.PerformanceMetrics,
     skipAudits?: string[]
-  ): Promise<LighthouseAudit[]> {
+  ): Promise<Lighthouse.Audit[]> {
     const diagnostics = [];
 
     // 诊断信息

@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
-import { ElementState, CheckElementParams } from '../types.js';
-import { BrowserManager } from '../browser-manager.js';
+import { Element } from '../../types';
+import { BrowserManager } from '../browser-manager';
 
 /**
  * 元素状态检查器
@@ -16,8 +16,8 @@ export class ElementHandler {
    * 检查元素状态
    */
   public async checkElement(
-    params: CheckElementParams
-  ): Promise<ElementState | null> {
+    params: Element.CheckParams
+  ): Promise<Element.State | null> {
     const page = await this.browserManager.getPage(params.url);
 
     try {
@@ -89,7 +89,7 @@ export class ElementHandler {
       return null;
     }
 
-    return elementState as ElementState;
+    return elementState as Element.State;
   }
 
   /**
@@ -98,8 +98,8 @@ export class ElementHandler {
   public async checkElements(
     selectors: string[],
     url?: string
-  ): Promise<Record<string, ElementState | null>> {
-    const results: Record<string, ElementState | null> = {};
+  ): Promise<Record<string, Element.State | null>> {
+    const results: Record<string, Element.State | null> = {};
 
     for (const selector of selectors) {
       results[selector] = await this.checkElement({ selector, url });

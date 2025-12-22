@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 
 /**
  * 检查元素工具定义
  */
-export const checkElementTool: ToolDefinition = {
+export const checkElementTool: Tools.Definition = {
     name: 'check_element',
     description: '检查元素状态（属性、样式、可见性等）',
     inputSchema: z.object({
@@ -13,7 +13,7 @@ export const checkElementTool: ToolDefinition = {
     }),
     handler: async (
         args: { selector: string; url?: string },
-        context: ToolContext
+        context: Tools.Context
     ) => {
         const elementState = await context.elementHandler.checkElement({
             selector: args.selector,

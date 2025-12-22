@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 
 /**
  * 获取 Console 错误工具定义
  */
-export const getConsoleErrorsTool: ToolDefinition = {
+export const getConsoleErrorsTool: Tools.Definition = {
     name: 'get_console_errors',
     description: '获取 Console 异常和日志',
     inputSchema: z.object({
@@ -13,7 +13,7 @@ export const getConsoleErrorsTool: ToolDefinition = {
     }),
     handler: async (
         args: { url?: string; level?: 'error' | 'warning' | 'all' },
-        context: ToolContext
+        context: Tools.Context
     ) => {
         const logs = await context.consoleHandler.getConsoleErrors({
             url: args.url,

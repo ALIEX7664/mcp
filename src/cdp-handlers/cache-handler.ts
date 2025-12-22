@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
-import { CacheStatus, GetCacheStatusParams } from '../types.js';
-import { BrowserManager } from '../browser-manager.js';
+import { Cache } from '../../types';
+import { BrowserManager } from '../browser-manager';
 
 /**
  * 缓存状态检查器
@@ -16,8 +16,8 @@ export class CacheHandler {
    * 获取缓存状态
    */
   public async getCacheStatus(
-    params: GetCacheStatusParams
-  ): Promise<CacheStatus> {
+    params: Cache.GetStatusParams
+  ): Promise<Cache.Status> {
     const page = await this.browserManager.getPage(params.url);
 
     // 获取 LocalStorage

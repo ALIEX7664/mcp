@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 
 /**
  * 获取 Lighthouse 报告工具定义
  */
-export const getLighthouseTool: ToolDefinition = {
+export const getLighthouseTool: Tools.Definition = {
   name: 'get_lighthouse',
   description: '获取 Lighthouse 性能报告（包括性能、可访问性、最佳实践、SEO 等指标）',
   inputSchema: z.object({
@@ -20,7 +20,7 @@ export const getLighthouseTool: ToolDefinition = {
   }),
   handler: async (
     args: { url?: string; onlyCategories?: string[]; skipAudits?: string[] },
-    context: ToolContext
+    context: Tools.Context
   ) => {
     const report = await context.lighthouseHandler.getLighthouseReport({
       url: args.url,

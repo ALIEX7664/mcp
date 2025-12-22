@@ -19,14 +19,14 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 // 注意：zod 的导入已移至工具定义文件中
 
 // 导入我们自定义的模块
-import { BrowserManager } from './browser-manager.js';
-import { ConsoleHandler } from './cdp-handlers/console-handler.js';
-import { ElementHandler } from './cdp-handlers/element-handler.js';
-import { CacheHandler } from './cdp-handlers/cache-handler.js';
-import { PerformanceHandler } from './cdp-handlers/performance-handler.js';
-import { HeapHandler } from './cdp-handlers/heap-handler.js';
-import { LighthouseHandler } from './cdp-handlers/lighthouse-handler.js';
-import { registerAllTools } from './tools/index.js';
+import { BrowserManager } from './browser-manager';
+import { ConsoleHandler } from './cdp-handlers/console-handler';
+import { ElementHandler } from './cdp-handlers/element-handler';
+import { CacheHandler } from './cdp-handlers/cache-handler';
+import { PerformanceHandler } from './cdp-handlers/performance-handler';
+import { HeapHandler } from './cdp-handlers/heap-handler';
+import { LighthouseHandler } from './cdp-handlers/lighthouse-handler';
+import { registerAllTools } from './tools/index';
 
 // 版本号会在构建时通过 tsup 的 define 选项内联
 // 这样无需运行时读取 package.json，也无需每次手动修改版本号

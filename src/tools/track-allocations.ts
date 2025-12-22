@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 
 /**
  * 跟踪对象分配工具定义
  */
-export const trackAllocationsTool: ToolDefinition = {
+export const trackAllocationsTool: Tools.Definition = {
     name: 'track_allocations',
     description: '跟踪对象分配',
     inputSchema: z.object({
@@ -46,7 +46,7 @@ export const trackAllocationsTool: ToolDefinition = {
             maxParseBytes?: number;
             export?: { mode?: 'none' | 'file' | 'inline' | 'both'; filePath?: string; maxInlineBytes?: number };
         },
-        context: ToolContext
+        context: Tools.Context
     ) => {
         const tracking = await context.heapHandler.trackAllocations({
             url: args.url,

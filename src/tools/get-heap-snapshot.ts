@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { ToolDefinition, ToolContext } from './types.js';
+import { Tools } from '../../types';
 
 /**
  * 获取堆快照工具定义
  */
-export const getHeapSnapshotTool: ToolDefinition = {
+export const getHeapSnapshotTool: Tools.Definition = {
     name: 'get_heap_snapshot',
     description: '获取堆快照（建议先让用户选择是否导出 raw snapshot，以及导出方式：none/file/inline/both）',
     inputSchema: z.object({
@@ -44,7 +44,7 @@ export const getHeapSnapshotTool: ToolDefinition = {
             maxParseBytes?: number;
             export?: { mode?: 'none' | 'file' | 'inline' | 'both'; filePath?: string; maxInlineBytes?: number };
         },
-        context: ToolContext
+        context: Tools.Context
     ) => {
         const snapshot = await context.heapHandler.getHeapSnapshot({
             url: args.url,
