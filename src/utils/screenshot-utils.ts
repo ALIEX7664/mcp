@@ -98,5 +98,13 @@ export async function ensurePageFullyLoaded(
 
   // 6. 等待最终稳定
   await new Promise((resolve) => setTimeout(resolve, 500));
+
+  // 7. 滚动回顶部，确保 fullPage 截图从顶部开始
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+  });
+
+  // 8. 等待滚动完成
+  await new Promise((resolve) => setTimeout(resolve, 200));
 }
 
